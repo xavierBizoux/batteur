@@ -1,0 +1,21 @@
+[
+    {
+        "name": "toto",
+        "plan": "/images/plan_cosmesoap.jpeg",
+        "machines": {
+            "PKB": {
+                "coords": "1780,2216,1945,2355",
+                "shape": "rect"
+            },
+            "GUERZE2": {
+                "coords": "1777,2361,1941,2482",
+                "shape": "rect"
+            },
+            "MAZZONI": {
+                "coords": "1984,3223,2633,3474",
+                "shape": "rect"
+            }
+        }
+    }
+]
+

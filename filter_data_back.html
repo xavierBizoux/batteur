@@ -1,0 +1,58 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A simple example to display data coming from VA">
+    <meta name="author" content="Xavier BIZOUX">
+
+    <link rel="stylesheet" type="text/css" href="filter_data_back.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="util/contentUtil.js"></script>
+    <script src="util/messagingUtil.js"></script>
+
+    <title>Get Data</title>
+</head>
+
+<body>
+    <div id="table"></div>
+    <script>
+        let vaResultName = null
+        // Define the function which will display data
+        function displayData(messageFromVA) {
+            const columns = messageFromVA.columns
+            const data = messageFromVA.data
+            vaResultName = messageFromVA.resultName
+            const headers = columns.map(column => "<th>" + column["label"] + "</th>")
+            const rows = data.map((row, index) => "<tr class='selection' id='row_" + index + "''><td>" + row[0] + "</td><td>" + row[1] + "</td></tr>")
+            let html = "<table>"
+            html += "<tr>" + headers.join() + "</tr>"
+            html += rows.join()
+            html += "</table>"
+            $("#table").html(html)
+        }
+
+        function filterData(selected) {
+            // Pass data back to VA
+            const id = parseInt(selected.currentTarget.id.split('_')[1])
+            const selection = [id]
+            va.messagingUtil.postSelectionMessage(vaResultName, selection)
+            // Change selected row color
+            var selected = $(this).hasClass("highlight")
+            $("#table tr").removeClass("highlight")
+            if (!selected) {
+                $(this).addClass("highlight")
+            }
+        }
+
+        // Call displayData function when VA data are loaded
+        va.messagingUtil.setOnDataReceivedCallback(displayData)
+
+        $("#table").delegate("tr.selection", "click", filterData)
+    </script>
+</body>
+
+</html>

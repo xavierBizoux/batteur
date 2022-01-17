@@ -1,0 +1,61 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A simple example to display data coming from VA">
+    <meta name="author" content="Xavier BIZOUX">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="util/contentUtil.js"></script>
+    <script src="util/messagingUtil.js"></script>
+
+    <title>Get Job Data</title>
+</head>
+
+<body>
+    <div id="table"></div>
+    <script>
+        // Generate HTML table for the data
+        function generateHtmlTable(data) {
+            const headers = Object.keys(data[0]).map(label => "<th>" + label + "</th>")
+            const rows = data.map(row => {
+                const cells = Object.keys(data[0]).map(column => "<td>" + row[column] + "</td>")
+                return "<tr>" + cells.join() + "</tr>"
+            })
+            let html = "<table>"
+            html += "<tr>"
+            html += headers.join()
+            html += "</tr>"
+            html += rows.join()
+            html += "</table>"
+            return html
+        }
+        // Define the function which will display data
+        function displayData(messageFromVA){
+            $("#table").html("Loading ...")
+            const data = messageFromVA.data
+            const url = new URL("https://live.lts.gel.race.sas.com/SASJobExecution/")
+            const params = {
+                "_program" : "/Users/sbxxab/My Folder/exportClass",
+                "_action" : "execute",
+                "_output_type" : "json",
+                "_target": "_self"
+                // "filter": data.map(s => "'" + s + "'").join(",")
+            }
+            for (const param in params) { url.searchParams.append(param, params[param]); }
+            let response = fetch(url, { credentials: 'include' })
+            response.then(response => response.json())
+                .then(data => {
+                    $("#table").html(generateHtmlTable(data))
+                });
+        }
+
+        // Call displayData function when VA data are loaded
+        va.messagingUtil.setOnDataReceivedCallback(displayData)
+    </script>
+</body>
+
+</html>
